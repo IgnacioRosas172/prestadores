@@ -2,21 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { Prisma, Profile } from '@prisma/client';
+import type { Profile } from '.prisma/client';
+import { Prisma } from '.prisma/client';
 
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) { }
   
-  @Post()
+  @Post('save')
   async createProfile(@Body() data: Prisma.ProfileCreateInput): Promise<Profile> {
     return this.profilesService.createProfile(data);
   }
 
-  @Get()
-  async findAll(@Query() params: {
-    skip?: number;
-    take?: number;
+  @Get('getall')
+  async findAll(@Query() params: { skip?: number; take?: number;
     where?: Prisma.ProfileWhereInput;
     orderBy?: Prisma.ProfileOrderByWithRelationInput;
   }): Promise<Profile[]> {
@@ -29,9 +28,7 @@ export class ProfilesController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() data: Prisma.ProfileUpdateInput,
+  async update( @Param('id') id: string, @Body() data: Prisma.ProfileUpdateInput,
   ): Promise<Profile> {
     return this.profilesService.updateProfile({
       where: { id: id },

@@ -3,5 +3,5 @@ import { IsString } from "class-validator";
 export class CreatePhotoDto {
   @IsString()
   url:string;
-  profileIde: string;
+  profileId: string;
 }
