@@ -54,6 +54,11 @@ export class PhotosService {
         });
     }
 
+    checkPhotoExist(url: string) {
+        const photoExist = this.prisma.photo.findOne
+
+    }
+
     /*async deletePhoto(id: string) {
       const photo = await this.prisma.photo.findUnique({ where: { id: id }});
       if(!photo) throw new NotFoundException('NOT_FOUND');
@@ -81,11 +86,33 @@ export class PhotosService {
                 console.warn(`no encontrado --> ${archivoGuardado}`);
             }
         } catch (error) {
-           // console.error(`error --> ${archivoGuardado}`, error);
+            // console.error(`error --> ${archivoGuardado}`, error);
             throw new InternalServerErrorException('ERROR_DELETING_FILE');
             //throw new HttpException('ERROR', 403);
         }
 
         await this.prisma.photo.delete({ where: { id: photoId } });
     }
+
+    public async verifyPhotoExists(profileId: string): Promise<Photo | null> {
+        return await this.prisma.photo.findUnique({
+            where: {
+                profileId: profileId
+            }
+        });
+    }
+
+    public async updatePhoto(profileId: string, newUrl: string): Promise<Photo> {
+        const existingPhoto = await this.verifyPhotoExists(profileId);
+
+        if (existingPhoto) {
+            await this.deletePhoto(existingPhoto.id);
+        }
+
+        return await this.createPhoto({
+            url: newUrl,
+            profileId: profileId
+        });
+    }
+
 }
