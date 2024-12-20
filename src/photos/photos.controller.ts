@@ -9,11 +9,13 @@ import {
     Param,
     HttpStatus,
     HttpCode,
+    Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PhotosService } from './photos.service';
+import { profile } from 'console';
 
 @Controller('photos')
 export class PhotosController {
@@ -84,4 +86,15 @@ export class PhotosController {
     async deletePhoto(@Param('id') photoId: string) {
         await this.photosService.deletePhoto(photoId);
     }
+
+    @Put('update/:profileId')
+    @UseInterceptors(FileInterceptor('file', PhotosService.prototype.getMulterOptions()),)
+    async updatePhoto(@Param('profileId') profileId: string, @UploadedFile() file: Express.Multer.File) {
+      if (!file) {
+          throw new BadRequestException('NO_SE_PROPORCIONO_NINGUN_ARCHIVO');
+      }
+
+      return this.photosService.updatePhoto(profileId, `uploads/photos/${file.filename}`);
+  }
+
 }
