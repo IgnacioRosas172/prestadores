@@ -16,7 +16,10 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PhotosService } from './photos.service';
 import { profile } from 'console';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreatePhotoDto } from './dto/create-photo.dto';
 
+@ApiTags('photos')
 @Controller('photos')
 export class PhotosController {
     constructor(private readonly photosService: PhotosService) { }
@@ -63,6 +66,8 @@ export class PhotosController {
       return photo;
     }*/
 
+    @ApiOperation({ summary: 'agrega el registro a la base y agrega la foto al fichero' })
+    @ApiBody({ type: CreatePhotoDto }) 
     @Post('upload')
     @UseInterceptors(
         FileInterceptor('file', PhotosService.prototype.getMulterOptions()),
@@ -80,13 +85,15 @@ export class PhotosController {
             profileId,
         });
     }
-
+    
+    @ApiOperation({ summary: 'elimina el registro de la base y la foto del fichero' })
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async deletePhoto(@Param('id') photoId: string) {
         await this.photosService.deletePhoto(photoId);
     }
-
+    
+    @ApiOperation({ summary: 'actualizar la foto, eliminando la anterior foto' })
     @Put('update/:profileId')
     @UseInterceptors(FileInterceptor('file', PhotosService.prototype.getMulterOptions()),)
     async updatePhoto(@Param('profileId') profileId: string, @UploadedFile() file: Express.Multer.File) {

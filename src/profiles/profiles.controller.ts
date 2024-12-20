@@ -4,16 +4,21 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import type { Profile } from '.prisma/client';
 import { Prisma } from '.prisma/client';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+ApiTags('Profiles')
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) { }
   
+  @ApiOperation({ summary: 'guardar un perfil' }) 
+  @ApiBody({ type: CreateProfileDto }) 
   @Post('save')
   async createProfile(@Body() data: Prisma.ProfileCreateInput): Promise<Profile> {
     return this.profilesService.createProfile(data);
   }
 
+  @ApiOperation({ summary: 'obtiene todos los perfiles' }) 
   @Get('getall')
   async findAll(@Query() params: { skip?: number; take?: number;
     where?: Prisma.ProfileWhereInput;
@@ -22,11 +27,14 @@ export class ProfilesController {
     return this.profilesService.profiles(params);
   }
 
+  @ApiOperation({ summary: 'obtiene el perfil por id' }) 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Profile> {
     return this.profilesService.profile({ id: id });
   }
 
+  @ApiOperation({ summary: 'actualizar el perfil por id' }) 
+  @ApiBody({ type: CreateProfileDto }) 
   @Patch(':id')
   async update( @Param('id') id: string, @Body() data: Prisma.ProfileUpdateInput,
   ): Promise<Profile> {
@@ -36,6 +44,7 @@ export class ProfilesController {
     });
   }
 
+  @ApiOperation({ summary: 'elimina el perfil por id' }) 
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<Profile> {
     return this.profilesService.deleteProfile({ id: id });
